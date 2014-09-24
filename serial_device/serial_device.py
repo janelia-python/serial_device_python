@@ -4,7 +4,6 @@ import os
 import time
 import platform
 import atexit
-import exceptions
 import operator
 import threading
 
@@ -46,16 +45,16 @@ class SerialDevice(serial.Serial):
             self.device_name = ''
 
         if ('port' not in kwargs) or (kwargs['port'] is None):
-            kwargs.update({'port': findSerialDevicePort(try_ports=try_ports,debug=self.debug)})
+            kwargs.update({'port': find_serial_device_port(try_ports=try_ports,debug=self.debug)})
         if 'timeout' not in kwargs:
             kwargs.update({'timeout': self.TIMEOUT})
 
         super(SerialDevice,self).__init__(*args,**kwargs)
-        atexit.register(self._exitSerialDevice)
+        atexit.register(self._exit_serial_device)
         self.time_write_prev = time.time()
         self.lock = threading.Lock()
 
-    def writeCheckFreq(self,cmd_str,delay_write=False):
+    def write_check_freq(self,cmd_str,delay_write=False):
 
         '''Use instead of self.write when you want to ensure that
         serial write commands do not happen too
@@ -78,11 +77,11 @@ class SerialDevice(serial.Serial):
             self.time_write_prev = time_now
         except (serial.writeTimeoutError):
             bytes_written = 0
-        self.debugPrint('command:', cmd_str)
-        self.debugPrint('bytes_written:', bytes_written)
+        self.debug_print('command:', cmd_str)
+        self.debug_print('bytes_written:', bytes_written)
         return bytes_written
 
-    def writeRead(self,cmd_str,use_readline=True,check_write_freq=True):
+    def write_read(self,cmd_str,use_readline=True,check_write_freq=True):
 
         '''A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
@@ -98,7 +97,7 @@ class SerialDevice(serial.Serial):
         response = None
         self.lock.acquire()
         if check_write_freq:
-            bytes_written = self.writeCheckFreq(cmd_str,delay_write=True)
+            bytes_written = self.write_check_freq(cmd_str,delay_write=True)
         else:
             bytes_written = self.write(cmd_str)
         if 0 < bytes_written:
@@ -107,32 +106,32 @@ class SerialDevice(serial.Serial):
                 response = self.readline()
             else:
                 chars_waiting = self.inWaiting()
-                self.debugPrint('chars_waiting:', chars_waiting)
+                self.debug_print('chars_waiting:', chars_waiting)
                 response = self.read(chars_waiting)
-            self.debugPrint('response:', response)
+            self.debug_print('response:', response)
         self.lock.release()
         return response
 
-    def _exitSerialDevice(self):
+    def _exit_serial_device(self):
         """
         Close the serial connection to provide some clean up.
         """
         self.close()
 
-    def debugPrint(self, *args):
+    def debug_print(self, *args):
         if self.debug:
             print(*args)
 
-    def getSerialDeviceInfo(self):
+    def get_serial_device_info(self):
         serial_device_info = {'device_name' : self.device_name,
                               'port' : self.port,
                               }
         return serial_device_info
 
-    def getDeviceName(self):
+    def get_device_name(self):
         return self.device_name
 
-    def setDeviceName(self,device_name):
+    def set_device_name(self,device_name):
         self.device_name = str(device_name)
 
 # device_names example:
@@ -163,23 +162,23 @@ class SerialDevices(list):
         if use_ports is not None:
             serial_device_ports = use_ports
         else:
-            serial_device_ports = findSerialDevicePorts(try_ports=try_ports,debug=debug)
+            serial_device_ports = find_serial_device_ports(try_ports=try_ports,debug=debug)
         for port in serial_device_ports:
             kwargs.update({'port': port})
-            self.appendDevice(*args,**kwargs)
+            self.append_device(*args,**kwargs)
 
-        self.updateDeviceNames(device_names)
+        self.update_device_names(device_names)
 
-    def appendDevice(self,*args,**kwargs):
+    def append_device(self,*args,**kwargs):
         self.append(SerialDevice(*args,**kwargs))
 
-    def getSerialDevicesInfo(self):
+    def get_serial_devices_info(self):
         serial_devices_info = []
         for dev in self:
-            serial_devices_info.append(dev.getSerialDeviceInfo())
+            serial_devices_info.append(dev.get_serial_device_info())
         return serial_devices_info
 
-    def updateDeviceNames(self,device_names):
+    def update_device_names(self,device_names):
         for name_dict in device_names:
             device_name = name_dict.pop('device_name')
             for device_index in range(len(self)):
@@ -191,21 +190,21 @@ class SerialDevices(list):
                 if match:
                     dev.device_name = str(device_name)
 
-    def sortByPort(self,*args,**kwargs):
+    def sort_by_port(self,*args,**kwargs):
         kwargs['key'] = operator.attrgetter('port')
         self.sort(**kwargs)
 
-    def getByPort(self,port):
+    def get_by_port(self,port):
         for device_index in range(len(self)):
             dev = self[device_index]
             if dev.port == port:
                 return dev
 
-    def sortByDeviceName(self,*args,**kwargs):
+    def sort_by_device_name(self,*args,**kwargs):
         kwargs['key'] = operator.attrgetter('device_name','port')
         self.sort(**kwargs)
 
-    def getByDeviceName(self,device_name):
+    def get_by_device_name(self,device_name):
         dev_list = []
         for device_index in range(len(self)):
             dev = self[device_index]
@@ -219,7 +218,7 @@ class SerialDevices(list):
 
 # ----------------------------------------------------------------------------
 
-def findSerialDevicePorts(try_ports=None, debug=DEBUG):
+def find_serial_device_ports(try_ports=None, debug=DEBUG):
     serial_device_ports = []
     os_type = platform.system()
     if os_type == 'Linux':
@@ -252,8 +251,8 @@ def findSerialDevicePorts(try_ports=None, debug=DEBUG):
     serial_device_ports.sort()
     return serial_device_ports
 
-def findSerialDevicePort(try_ports=None, debug=DEBUG):
-    serial_device_ports = findSerialDevicePorts(try_ports)
+def find_serial_device_port(try_ports=None, debug=DEBUG):
+    serial_device_ports = find_serial_device_ports(try_ports)
     if len(serial_device_ports) == 1:
         return serial_device_ports[0]
     elif len(serial_device_ports) == 0:
