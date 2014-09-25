@@ -32,13 +32,13 @@ class SerialDevice(serial.Serial):
         else:
             try_ports = None
         try:
-            self.write_read_delay = kwargs.pop('write_read_delay')
+            self._write_read_delay = kwargs.pop('write_read_delay')
         except KeyError:
-            self.write_read_delay = self.WRITE_READ_DELAY
+            self._write_read_delay = self.WRITE_READ_DELAY
         try:
-            self.write_write_delay = kwargs.pop('write_write_delay')
+            self._write_write_delay = kwargs.pop('write_write_delay')
         except KeyError:
-            self.write_write_delay = self.WRITE_WRITE_DELAY
+            self._write_write_delay = self.WRITE_WRITE_DELAY
         try:
             self.device_name = kwargs.pop('device_name')
         except KeyError:
@@ -51,8 +51,8 @@ class SerialDevice(serial.Serial):
 
         super(SerialDevice,self).__init__(*args,**kwargs)
         atexit.register(self._exit_serial_device)
-        self.time_write_prev = time.time()
-        self.lock = threading.Lock()
+        self._time_write_prev = time.time()
+        self._lock = threading.Lock()
 
     def write_check_freq(self,cmd_str,delay_write=False):
 
@@ -65,16 +65,16 @@ class SerialDevice(serial.Serial):
         unnecessary.'''
 
         time_now = time.time()
-        time_since_write_prev = time_now - self.time_write_prev
-        if time_since_write_prev < self.write_write_delay:
-            delay_time_needed = self.write_write_delay - time_since_write_prev
+        time_since_write_prev = time_now - self._time_write_prev
+        if time_since_write_prev < self._write_write_delay:
+            delay_time_needed = self._write_write_delay - time_since_write_prev
             if delay_write:
                 time.sleep(delay_time_needed)
             else:
                 raise WriteFrequencyError(delay_time_needed)
         try:
             bytes_written = self.write(cmd_str)
-            self.time_write_prev = time_now
+            self._time_write_prev = time_now
         except (serial.writeTimeoutError):
             bytes_written = 0
         self.debug_print('command:', cmd_str)
@@ -95,13 +95,13 @@ class SerialDevice(serial.Serial):
         chars_waiting = self.inWaiting()
         self.read(chars_waiting)
         response = None
-        self.lock.acquire()
+        self._lock.acquire()
         if check_write_freq:
             bytes_written = self.write_check_freq(cmd_str,delay_write=True)
         else:
             bytes_written = self.write(cmd_str)
         if 0 < bytes_written:
-            time.sleep(self.write_read_delay)
+            time.sleep(self._write_read_delay)
             if use_readline:
                 response = self.readline()
             else:
@@ -109,7 +109,7 @@ class SerialDevice(serial.Serial):
                 self.debug_print('chars_waiting:', chars_waiting)
                 response = self.read(chars_waiting)
             self.debug_print('response:', response)
-        self.lock.release()
+        self._lock.release()
         return response
 
     def _exit_serial_device(self):
