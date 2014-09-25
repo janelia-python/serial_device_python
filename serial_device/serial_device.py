@@ -244,6 +244,10 @@ def find_serial_device_ports(try_ports=None, debug=DEBUG):
                         serial_device_ports.append(str(val[1]))
                 except EnvironmentError:
                     break
+    elif os_type == 'Darwin':
+        serial_device_ports = os.listdir('{0}dev'.format(os.path.sep))
+        serial_device_ports = [x for x in serial_device_ports if 'tty.' in x or 'cu.' in x]
+        serial_device_ports = ['{0}dev{0}{1}'.format(os.path.sep,x) for x in serial_device_ports]
 
     if try_ports is not None:
         serial_device_ports = list(set(try_ports) & set(serial_device_ports))

@@ -1,7 +1,7 @@
 python_serial_device
 ====================
 
-#Usage
+##Usage
 
 
 ```python
@@ -11,9 +11,9 @@ dev = SerialDevice()
 dev.get_serial_device_info()
 ```
 
-#Installation
+##Installation
 
-##Linux and Mac OS
+###Linux and Mac OS
 
 ```shell
 mkdir -p ~/virtualenvs/serial_device
@@ -22,7 +22,7 @@ source ~/virtualenvs/serial_device/bin/activate
 pip install https://github.com/JaneliaSciComp/python_serial_device/tarball/master
 ```
 
-##Windows
+###Windows
 
 Download Python 2.7.8 Windows Installer from:
 
