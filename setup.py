@@ -16,7 +16,7 @@ setup(
     # http://packaging.python.org/en/latest/tutorial.html#version
     version='1.0.0',
 
-    description='Python Serial Device',
+    description='Extends serial.Serial to add methods such as auto discovery of available serial ports in Linux, Windows, and Mac OS X',
     long_description=long_description,
 
     # The project's main homepage.
