@@ -223,7 +223,7 @@ def find_serial_device_ports(try_ports=None, debug=DEBUG):
     os_type = platform.system()
     if os_type == 'Linux':
         serial_device_ports = os.listdir('{0}dev'.format(os.path.sep))
-        serial_device_ports = [x for x in serial_device_ports if 'ttyUSB' in x or 'ttyACM' in x]
+        serial_device_ports = [x for x in serial_device_ports if 'ttyUSB' in x or 'ttyACM' in x or 'arduino' in x]
         serial_device_ports = ['{0}dev{0}{1}'.format(os.path.sep,x) for x in serial_device_ports]
     elif os_type == 'Windows':
         import _winreg as winreg
