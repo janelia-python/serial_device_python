@@ -9,12 +9,12 @@ with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='serial_device',
+    name='serial_device2',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='2.1.0',
+    version='1.0.0',
 
     description='Python Serial Device',
     long_description=long_description,
@@ -61,7 +61,7 @@ setup(
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
     # packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-    packages=['serial_device'],
+    packages=['serial_device2'],
 
     # List run-time dependencies here.  These will be installed by pip when your
     # project is installed. For an analysis of "install_requires" vs pip's

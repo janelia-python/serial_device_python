@@ -16,7 +16,7 @@ BSD
 
 Example Usage::
 
-    from serial_device import SerialDevice, find_serial_device_ports
+    from serial_device2 import SerialDevice, find_serial_device_ports
     find_serial_device_ports()
     dev = SerialDevice()
     dev.get_serial_device_info()
