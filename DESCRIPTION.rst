@@ -1,13 +1,22 @@
-A sample Python project
-=======================
+python_serial_device
+====================
 
-This is the description file for the project.
+This Python package creates a class named SerialDevice, which inherits
+from serial.Serial and adds methods to it, like auto discovery of
+available serial ports in Linux, Windows, and Mac OS. The SerialDevice
+class can be used by itself, but it is mostly intended to be a base
+class for other serial port devices with higher level functions.
 
-The file should use UTF-8 encoding and be written using ReStructured Text. It
-will be used to generate the project webpage on PyPI, and should be written for
-that purpose.
+Authors:
+Peter Polidoro <polidorop@janelia.hhmi.org>
 
-Typical contents for this file would include an overview of the project, basic
-usage examples, etc. Generally, including the project changelog in here is not
-a good idea, although a simple "What's New" section for the most recent version
-may be appropriate.
+License:
+BSD
+
+Example Usage::
+
+    from serial_device import SerialDevice, find_serial_device_ports
+    find_serial_device_ports()
+    dev = SerialDevice()
+    dev.get_serial_device_info()
+

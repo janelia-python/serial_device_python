@@ -10,6 +10,9 @@ class for other serial port devices with higher level functions.
 Authors:
 Peter Polidoro <polidorop@janelia.hhmi.org>
 
+License:
+BSD
+
 ##Example Usage
 
 
