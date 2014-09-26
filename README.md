@@ -6,7 +6,8 @@ SerialDevice, which inherits from serial.Serial and adds methods to
 it, like auto discovery of available serial ports in Linux, Windows,
 and Mac OS X. The SerialDevice class can be used by itself, but it is
 mostly intended to be a base class for other serial port devices with
-higher level functions.
+higher level functions. SerialDevices creates a list of SerialDevice
+instances from all available serial ports.
 
 Authors:
 
@@ -20,9 +21,14 @@ License:
 
 
 ```python
-from serial_device2 import SerialDevice, find_serial_device_ports
+from serial_device2 import SerialDevice, SerialDevices, find_serial_device_ports
 find_serial_device_ports()
 dev = SerialDevice()
+dev = SerialDevice('/dev/ttyACM0')
+dev = SerialDevice('/dev/tty.usbmodem262471')
+dev = SerialDevice('COM3')
+dev_list = SerialDevices()
+dev = dev_list[0]
 dev.get_serial_device_info()
 ```
 
