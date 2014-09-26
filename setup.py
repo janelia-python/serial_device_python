@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from codecs import open  # To use a consistent encoding
 from os import path
-from version import *
+from version import get_git_version
 
 here = path.abspath(path.dirname(__file__))
 
