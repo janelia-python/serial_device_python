@@ -1,18 +1,20 @@
 python_serial_device
 ====================
 
-This Python package creates a class named SerialDevice, which inherits
-from serial.Serial and adds methods to it, like auto discovery of
-available serial ports in Linux, Windows, and Mac OS X. The
-SerialDevice class can be used by itself, but it is mostly intended to
-be a base class for other serial port devices with higher level
-functions.
+This Python package (serial_device2) creates a class named
+SerialDevice, which inherits from serial.Serial and adds methods to
+it, like auto discovery of available serial ports in Linux, Windows,
+and Mac OS X. The SerialDevice class can be used by itself, but it is
+mostly intended to be a base class for other serial port devices with
+higher level functions.
 
 Authors:
-Peter Polidoro <polidorop@janelia.hhmi.org>
+
+    Peter Polidoro <polidorop@janelia.hhmi.org>
 
 License:
-BSD
+
+    BSD
 
 ##Example Usage
 
@@ -29,10 +31,10 @@ dev.get_serial_device_info()
 ###Linux and Mac OS X
 
 ```shell
-mkdir -p ~/virtualenvs/serial_device
-virtualenv ~/virtualenvs/serial_device
-source ~/virtualenvs/serial_device/bin/activate
-pip install https://github.com/JaneliaSciComp/python_serial_device/tarball/master
+mkdir -p ~/virtualenvs/serial_device2
+virtualenv ~/virtualenvs/serial_device2
+source ~/virtualenvs/serial_device2/bin/activate
+pip install serial_device2
 ```
 
 ###Windows
@@ -66,5 +68,5 @@ pip install virtualenv
 mkdir C:\virtualenvs
 virtualenv C:\virtualenvs\serial_device
 C:\virtualenvs\serial_device\Scripts\activate
-pip install https://github.com/JaneliaSciComp/python_serial_device/zipball/master
+pip install serial_device2
 ```
