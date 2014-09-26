@@ -8,11 +8,13 @@ SerialDevice class can be used by itself, but it is mostly intended to
 be a base class for other serial port devices with higher level
 functions.
 
-Authors:
-Peter Polidoro <polidorop@janelia.hhmi.org>
+Authors::
 
-License:
-BSD
+    Peter Polidoro <polidorop@janelia.hhmi.org>
+
+License::
+
+    BSD
 
 Example Usage::
 
