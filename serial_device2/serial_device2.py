@@ -37,11 +37,11 @@ class SerialDevice(serial.Serial):
 
     Example Usage:
 
-    dev = SerialDevice()
-    dev = SerialDevice('/dev/ttyACM0')
-    dev = SerialDevice('/dev/tty.usbmodem262471')
-    dev = SerialDevice('COM3')
-    dev.get_serial_device_info()
+    dev = SerialDevice()  # Automatically finds device if one available
+    dev = SerialDevice('/dev/ttyACM0') # Linux
+    dev = SerialDevice('/dev/tty.usbmodem262471') # Mac OS X
+    dev = SerialDevice('COM3') # Windows
+    dev.get_device_info()
     '''
     TIMEOUT = 0.05
     WRITE_READ_DELAY = 0.05
@@ -151,7 +151,7 @@ class SerialDevice(serial.Serial):
         self._lock.release()
         return response
 
-    def get_serial_device_info(self):
+    def get_device_info(self):
         '''
         Returns device name and serial port.
         '''
@@ -160,17 +160,6 @@ class SerialDevice(serial.Serial):
                               }
         return serial_device_info
 
-    def get_device_name(self):
-        '''
-        Get device name.
-        '''
-        return self.device_name
-
-    def set_device_name(self,device_name):
-        '''
-        Set device name.
-        '''
-        self.device_name = str(device_name)
 
 # device_names example:
 # [{'port':'/dev/ttyACM0',
@@ -184,8 +173,11 @@ class SerialDevices(list):
 
     Example Usage:
 
-    dev_list = SerialDevices()
-    dev_list[0].get_serial_device_info()
+    devs = SerialDevices()  # Automatically finds all available devices
+    devs.get_devices_info()
+    devs.sort_by_port()
+    dev = devs[0]
+    dev.get_device_info()
     '''
 
     def __init__(self,*args,**kwargs):
@@ -234,13 +226,13 @@ class SerialDevices(list):
         '''
         self.append(SerialDevice(*args,**kwargs))
 
-    def get_serial_devices_info(self):
+    def get_devices_info(self):
         '''
         Get info for each SerialDevice.
         '''
         serial_devices_info = []
         for dev in self:
-            serial_devices_info.append(dev.get_serial_device_info())
+            serial_devices_info.append(dev.get_device_info())
         return serial_devices_info
 
     def sort_by_port(self,*args,**kwargs):
@@ -328,7 +320,7 @@ def find_serial_device_ports(try_ports=None, debug=DEBUG):
 
 def find_serial_device_port(try_ports=None, debug=DEBUG):
     '''
-    Returns a serial port if only one is available.
+    Returns a serial port if one is available.
     '''
     serial_device_ports = find_serial_device_ports(try_ports)
     if len(serial_device_ports) == 1:

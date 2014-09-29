@@ -22,14 +22,16 @@ License:
 
 ```python
 from serial_device2 import SerialDevice, SerialDevices, find_serial_device_ports
-find_serial_device_ports()
-dev = SerialDevice()
-dev = SerialDevice('/dev/ttyACM0')
-dev = SerialDevice('/dev/tty.usbmodem262471')
-dev = SerialDevice('COM3')
-dev_list = SerialDevices()
-dev = dev_list[0]
-dev.get_serial_device_info()
+find_serial_device_ports() # Returns list of available serial ports
+dev = SerialDevice()  # Automatically finds device if one available
+dev = SerialDevice('/dev/ttyACM0') # Linux
+dev = SerialDevice('/dev/tty.usbmodem262471') # Mac OS X
+dev = SerialDevice('COM3') # Windows
+devs = SerialDevices()  # Automatically finds all available devices
+devs.get_devices_info()
+devs.sort_by_port()
+dev = devs[0]
+dev.get_device_info()
 ```
 
 ##Installation
