@@ -49,7 +49,7 @@ pip install serial_device2
 
 Download Python 2.7.X Windows Installer from:
 
-    https://www.python.org/download
+[https://www.python.org/download](https://www.python.org/download)
 
 Run it install Python and then if necessary, add to path:
 
@@ -57,7 +57,7 @@ Run it install Python and then if necessary, add to path:
 
 Download get-pip.py from:
 
-    https://bootstrap.pypa.io/get-pip.py
+[https://bootstrap.pypa.io/get-pip.py](https://bootstrap.pypa.io/get-pip.py)
 
 Run:
 
