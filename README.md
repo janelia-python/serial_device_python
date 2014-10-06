@@ -38,6 +38,10 @@ dev.get_device_info()
 
 ###Linux and Mac OS X
 
+[Setup Python for Linux](./PYTHON_SETUP_LINUX.md)
+
+[Setup Python for Mac OS X](./PYTHON_SETUP_MAC_OS_X.md)
+
 ```shell
 mkdir -p ~/virtualenvs/serial_device2
 virtualenv ~/virtualenvs/serial_device2
@@ -47,33 +51,9 @@ pip install serial_device2
 
 ###Windows
 
-Download Python 2.7.X Windows Installer from:
-
-[https://www.python.org/download](https://www.python.org/download)
-
-Run it install Python and then if necessary, add to path:
-
-    C:\Python27\
-
-Download get-pip.py from:
-
-[https://bootstrap.pypa.io/get-pip.py](https://bootstrap.pypa.io/get-pip.py)
-
-Run:
+[Setup Python for Windows](./PYTHON_SETUP_WINDOWS.md)
 
 ```shell
-python get-pip.py
-```
-
-Add to path:
-
-    C:\Python27\Scripts\
-
-Run:
-
-```shell
-pip install virtualenv
-mkdir C:\virtualenvs
 virtualenv C:\virtualenvs\serial_device
 C:\virtualenvs\serial_device\Scripts\activate
 pip install serial_device2
