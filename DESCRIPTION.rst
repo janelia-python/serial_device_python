@@ -1,4 +1,4 @@
-python_serial_device
+serial_device_python
 ====================
 
 This Python package (serial_device2) creates a class named

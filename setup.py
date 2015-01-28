@@ -21,7 +21,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/JaneliaSciComp/python_serial_device',
+    url='https://github.com/JaneliaSciComp/serial_device_python',
 
     # Author details
     author='Peter Polidoro',
