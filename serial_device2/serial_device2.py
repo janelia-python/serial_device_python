@@ -111,7 +111,9 @@ class SerialDevice(serial.Serial):
             else:
                 raise WriteFrequencyError(delay_time_needed)
         try:
+            self._lock.acquire()
             bytes_written = self.write(cmd_str)
+            self._lock.release()
             self._time_write_prev = time_now
         except (serial.writeTimeoutError):
             bytes_written = 0
