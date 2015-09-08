@@ -135,10 +135,10 @@ class SerialDevice(serial.Serial):
         '''
 
         # First clear garbage.
-        chars_waiting = self.inWaiting()
-        self.read(chars_waiting)
         response = None
         self._lock.acquire()
+        chars_waiting = self.inWaiting()
+        self.read(chars_waiting)
         if check_write_freq:
             bytes_written = self.write_check_freq(cmd_str,delay_write=True,lock_=False)
         else:
