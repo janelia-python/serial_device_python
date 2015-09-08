@@ -92,7 +92,7 @@ class SerialDevice(serial.Serial):
         if self.debug:
             print(*args)
 
-    def write_check_freq(self,cmd_str,delay_write=False,__lock=True):
+    def write_check_freq(self,cmd_str,delay_write=False,lock_=True):
         '''
         Use instead of self.write when you want to ensure that
         serial write commands do not happen too
@@ -110,14 +110,14 @@ class SerialDevice(serial.Serial):
                 time.sleep(delay_time_needed)
             else:
                 raise WriteFrequencyError(delay_time_needed)
-        if __lock:
+        if lock_:
             self._lock.acquire()
         try:
             bytes_written = self.write(cmd_str)
             self._time_write_prev = time_now
         except (serial.writeTimeoutError):
             bytes_written = 0
-        if __lock:
+        if lock_:
             self._lock.release()
         self._debug_print('command:', cmd_str)
         self._debug_print('bytes_written:', bytes_written)
@@ -140,7 +140,7 @@ class SerialDevice(serial.Serial):
         response = None
         self._lock.acquire()
         if check_write_freq:
-            bytes_written = self.write_check_freq(cmd_str,delay_write=True,__lock=False)
+            bytes_written = self.write_check_freq(cmd_str,delay_write=True,lock_=False)
         else:
             bytes_written = self.write(cmd_str)
         if 0 < bytes_written:
