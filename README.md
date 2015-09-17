@@ -36,11 +36,9 @@ dev.get_device_info()
 
 ##Installation
 
+[Setup Python](https://github.com/janelia-pypi/python_setup)
+
 ###Linux and Mac OS X
-
-[Setup Python for Linux](./PYTHON_SETUP_LINUX.md)
-
-[Setup Python for Mac OS X](./PYTHON_SETUP_MAC_OS_X.md)
 
 ```shell
 mkdir -p ~/virtualenvs/serial_device2
@@ -50,8 +48,6 @@ pip install serial_device2
 ```
 
 ###Windows
-
-[Setup Python for Windows](./PYTHON_SETUP_WINDOWS.md)
 
 ```shell
 virtualenv C:\virtualenvs\serial_device
