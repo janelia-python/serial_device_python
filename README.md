@@ -1,5 +1,4 @@
-serial_device_python
-====================
+#serial_device_python
 
 This Python package (serial_device2) creates a class named
 SerialDevice, which inherits from serial.Serial and adds methods to
