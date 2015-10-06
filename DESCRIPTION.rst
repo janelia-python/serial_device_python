@@ -20,12 +20,18 @@ Example Usage::
 
     from serial_device2 import SerialDevice, find_serial_device_ports
     find_serial_device_ports() # Returns list of available serial ports
-    dev = SerialDevice()  # Automatically finds device if one available
+    dev = SerialDevice() # Might automatically find device if one available
+    # if it is not found automatically, specify port directly
+    dev = SerialDevice(port='/dev/ttyUSB0') # Linux
+    dev = SerialDevice(port='/dev/tty.usbmodem262471') # Mac OS X
+    dev = SerialDevice(port='COM3') # Windows
     dev.get_device_info()
-    dev = SerialDevice('/dev/ttyACM0') # Linux
-    dev = SerialDevice('/dev/tty.usbmodem262471') # Mac OS X
-    dev = SerialDevice('COM3') # Windows
-    devs = SerialDevices()  # Automatically finds all available devices
+    from serial_device2 import SerialDevices
+    devs = SerialDevices()  # Might automatically find all available devices
+    # if they are not found automatically, specify ports to try
+    devs = SerialDevices(try_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
+    devs = SerialDevices(try_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
+    devs = SerialDevices(try_ports=['COM3','COM4']) # Windows
     devs.get_devices_info()
     devs.sort_by_port()
     dev = devs[0]
