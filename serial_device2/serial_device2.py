@@ -179,10 +179,10 @@ class SerialDevices(list):
     Example Usage:
 
     devs = SerialDevices()  # Might automatically find all available devices
-    # if they are not found automatically, specify ports to try
-    devs = SerialDevices(try_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
-    devs = SerialDevices(try_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
-    devs = SerialDevices(try_ports=['COM3','COM4']) # Windows
+    # if they are not found automatically, specify ports to use
+    devs = SerialDevices(use_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
+    devs = SerialDevices(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
+    devs = SerialDevices(use_ports=['COM3','COM4']) # Windows
     devs.get_devices_info()
     devs.sort_by_port()
     dev = devs[0]
