@@ -134,8 +134,8 @@ class SerialDevice(serial.Serial):
         characters that are available instead of looking for the end
         of line character or timing out.
 
-        max_read_attempts will allow it to try reading again if it read from the
-        device before the response was ready
+        max_read_attempts opens the possibility to read from the device again
+        if the device did not have the response ready after the first read
         '''
 
         # First clear garbage.
