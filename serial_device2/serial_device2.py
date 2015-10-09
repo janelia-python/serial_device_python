@@ -124,7 +124,7 @@ class SerialDevice(serial.Serial):
         self._debug_print('bytes_written:', bytes_written)
         return bytes_written
 
-    def write_read(self,cmd_str,use_readline=True,check_write_freq=True):
+    def write_read(self,cmd_str,use_readline=True,check_write_freq=True,max_read_attempts=1):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
@@ -133,6 +133,9 @@ class SerialDevice(serial.Serial):
         handle. Setting use_readline=False reads all response
         characters that are available instead of looking for the end
         of line character or timing out.
+
+        max_read_attempts will allow it to try reading again if it read from the
+        device before the response was ready
         '''
 
         # First clear garbage.
@@ -146,14 +149,36 @@ class SerialDevice(serial.Serial):
             bytes_written = self.write(cmd_str)
         if 0 < bytes_written:
             time.sleep(self._write_read_delay)
-            if use_readline:
-                response = self.readline()
-            else:
-                chars_waiting = self.inWaiting()
-                self._debug_print('chars_waiting:', chars_waiting)
-                response = self.read(chars_waiting)
+            response = self._read_with_retry(use_readline, max_read_attempts)
             self._debug_print('response:', response)
         self._lock.release()
+        return response
+
+    def _read_with_retry(self,use_readline,max_read_attempts):
+        '''
+        Reads data from the device.  If there is no data, try
+        reading again.
+        '''
+        for i in range(max_read_attempts):
+            response = self._read(use_readline)
+            if response:
+                return response
+
+            self._debug_print('no response -- retrying')
+
+        return response
+
+    def _read(self,use_readline):
+        '''
+        Reads data from the device
+        '''
+        if use_readline:
+            response = self.readline()
+        else:
+            chars_waiting = self.inWaiting()
+            self._debug_print('chars_waiting:', chars_waiting)
+            response = self.read(chars_waiting)
+
         return response
 
     def get_device_info(self):
