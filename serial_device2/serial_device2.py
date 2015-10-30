@@ -124,7 +124,7 @@ class SerialDevice(serial.Serial):
         self._debug_print('bytes_written:', bytes_written)
         return bytes_written
 
-    def write_read(self,cmd_str,use_readline=True,check_write_freq=True,max_read_attempts=1):
+    def write_read(self,cmd_str,use_readline=True,check_write_freq=True,max_read_attempts=10):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
