@@ -140,19 +140,19 @@ class SerialDevice(serial.Serial):
 
         # First clear garbage.
         response = None
-        self._lock.acquire()
-        chars_waiting = self.inWaiting()
-        self.read(chars_waiting)
-        if check_write_freq:
-            bytes_written = self.write_check_freq(cmd_str,delay_write=True,lock_=False)
-        else:
-            bytes_written = self.write(cmd_str)
-        if 0 < bytes_written:
-            time.sleep(self._write_read_delay)
-            response = self._read_with_retry(use_readline, max_read_attempts)
-            self._debug_print('response:', response)
-        self._lock.release()
-        return response
+        with self._lock:
+            chars_waiting = self.inWaiting()
+            self.read(chars_waiting)
+            if check_write_freq:
+                bytes_written = self.write_check_freq(cmd_str,delay_write=True,lock_=False)
+            else:
+                bytes_written = self.write(cmd_str)
+            if 0 < bytes_written:
+                time.sleep(self._write_read_delay)
+                response = self._read_with_retry(use_readline, max_read_attempts)
+                self._debug_print('response:', response)
+
+            return response
 
     def _read_with_retry(self,use_readline,max_read_attempts):
         '''
