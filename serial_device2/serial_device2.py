@@ -111,17 +111,28 @@ class SerialDevice(serial.Serial):
                 time.sleep(delay_time_needed)
             else:
                 raise WriteFrequencyError(delay_time_needed)
+        bytes_written = 0
         if lock_:
-            self._lock.acquire()
+            bytes_written = self._write_check_freq_locked()
+        else:
+            bytes_written = self._write_check_freq_unlocked()
+        self._debug_print('command:', cmd_str)
+        self._debug_print('bytes_written:', bytes_written)
+        return bytes_written
+
+    def _write_check_freq_locked():
+        bytes_written = 0
+        with self._lock:
+            bytes_written = self._write_check_freq_unlocked()
+        return bytes_written
+
+    def _write_check_freq_unlocked():
+        bytes_written = 0
         try:
             bytes_written = self.write(cmd_str)
             self._time_write_prev = time_now
         except (serial.writeTimeoutError):
             bytes_written = 0
-        if lock_:
-            self._lock.release()
-        self._debug_print('command:', cmd_str)
-        self._debug_print('bytes_written:', bytes_written)
         return bytes_written
 
     def write_read(self,cmd_str,use_readline=True,check_write_freq=True,max_read_attempts=10):
@@ -147,12 +158,11 @@ class SerialDevice(serial.Serial):
                 bytes_written = self.write_check_freq(cmd_str,delay_write=True,lock_=False)
             else:
                 bytes_written = self.write(cmd_str)
-            if 0 < bytes_written:
+            if bytes_written > 0:
                 time.sleep(self._write_read_delay)
                 response = self._read_with_retry(use_readline, max_read_attempts)
                 self._debug_print('response:', response)
-
-            return response
+        return response
 
     def _read_with_retry(self,use_readline,max_read_attempts):
         '''
