@@ -113,24 +113,25 @@ class SerialDevice(serial.Serial):
                 raise WriteFrequencyError(delay_time_needed)
         bytes_written = 0
         if lock_:
-            bytes_written = self._write_check_freq_locked()
+            bytes_written = self._write_check_freq_locked(cmd_str)
         else:
-            bytes_written = self._write_check_freq_unlocked()
+            bytes_written = self._write_check_freq_unlocked(cmd_str)
         self._debug_print('command:', cmd_str)
         self._debug_print('bytes_written:', bytes_written)
         return bytes_written
 
-    def _write_check_freq_locked():
+    def _write_check_freq_locked(self,cmd_str):
         bytes_written = 0
         with self._lock:
-            bytes_written = self._write_check_freq_unlocked()
+            bytes_written = self._write_check_freq_unlocked(cmd_str)
         return bytes_written
 
-    def _write_check_freq_unlocked():
+    def _write_check_freq_unlocked(self,cmd_str):
         bytes_written = 0
         try:
             bytes_written = self.write(cmd_str)
-            self._time_write_prev = time_now
+            if bytes_written > 0:
+                self._time_write_prev = time.time()
         except (serial.writeTimeoutError):
             bytes_written = 0
         return bytes_written
