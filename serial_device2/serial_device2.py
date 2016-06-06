@@ -24,7 +24,19 @@ else:
 DEBUG = False
 
 class WriteFrequencyError(Exception):
-    def __init__(self, value):
+    def __init__(self, value=''):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+class WriteError(Exception):
+    def __init__(self, value=''):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+class ReadError(Exception):
+    def __init__(self, value=''):
         self.value = value
     def __str__(self):
         return repr(self.value)
@@ -45,8 +57,8 @@ class SerialDevice(serial.Serial):
     dev.get_device_info()
     '''
     TIMEOUT = 0.05
-    WRITE_READ_DELAY = 0.05
-    WRITE_WRITE_DELAY = 0.05
+    WRITE_READ_DELAY = 0.001
+    WRITE_WRITE_DELAY = 0.005
 
     def __init__(self, *args, **kwargs):
         try:
@@ -110,20 +122,26 @@ class SerialDevice(serial.Serial):
             if delay_write:
                 time.sleep(delay_time_needed)
             else:
-                raise WriteFrequencyError(delay_time_needed)
+                raise WriteFrequencyError("Time between writes needs to be > {0}s".format(self._write_write_delay))
         bytes_written = 0
         if lock_:
-            bytes_written = self._write_check_freq_locked(cmd_str)
+            bytes_written = self._write_check_freq_locked(cmd_str,delay_write)
         else:
             bytes_written = self._write_check_freq_unlocked(cmd_str)
         self._debug_print('command:', cmd_str)
         self._debug_print('bytes_written:', bytes_written)
         return bytes_written
 
-    def _write_check_freq_locked(self,cmd_str):
+    def _write_check_freq_locked(self,cmd_str,blocking=True):
         bytes_written = 0
-        with self._lock:
+        lock_acquired = self._lock.acquire(blocking)
+        if not lock_acquired:
+            raise WriteFrequencyError("Time between writes needs to be larger.")
+        try:
             bytes_written = self._write_check_freq_unlocked(cmd_str)
+        finally:
+            self._lock.release()
+
         return bytes_written
 
     def _write_check_freq_unlocked(self,cmd_str):
@@ -136,7 +154,7 @@ class SerialDevice(serial.Serial):
             bytes_written = 0
         return bytes_written
 
-    def write_read(self,cmd_str,use_readline=True,check_write_freq=True,max_read_attempts=10):
+    def write_read(self,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100000,delay_write=True):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
@@ -152,17 +170,24 @@ class SerialDevice(serial.Serial):
 
         # First clear garbage.
         response = None
-        with self._lock:
+        lock_acquired = self._lock.acquire(delay_write)
+        if not lock_acquired:
+            raise WriteFrequencyError("Time between writes needs to be larger.")
+        try:
             chars_waiting = self.inWaiting()
             self.read(chars_waiting)
             if check_write_freq:
-                bytes_written = self.write_check_freq(cmd_str,delay_write=True,lock_=False)
+                bytes_written = self.write_check_freq(cmd_str,delay_write=delay_write,lock_=False)
             else:
                 bytes_written = self.write(cmd_str)
             if bytes_written > 0:
                 time.sleep(self._write_read_delay)
                 response = self._read_with_retry(use_readline, max_read_attempts)
                 self._debug_print('response:', response)
+            else:
+                raise WriteError("No bytes written.")
+        finally:
+            self._lock.release()
         return response
 
     def _read_with_retry(self,use_readline,max_read_attempts):
@@ -170,14 +195,18 @@ class SerialDevice(serial.Serial):
         Reads data from the device.  If there is no data, try
         reading again.
         '''
-        for i in range(max_read_attempts):
+        i = 0
+        while i < max_read_attempts:
+            i += 1
             response = self._read(use_readline)
             if response:
                 return response
 
             self._debug_print('no response -- retrying')
-
-        return response
+        if not response:
+            raise ReadError("No response received.")
+        else:
+            return response
 
     def _read(self,use_readline):
         '''
@@ -201,6 +230,35 @@ class SerialDevice(serial.Serial):
                               }
         return serial_device_info
 
+    def check_write_freq(self,write_period_desired,cmd_str,delay_write=False):
+        cycle_count = 100
+        time_start = time.time()
+        time_prev = time.time()
+        for cycle_n in range(cycle_count):
+            self.write_check_freq(cmd_str,delay_write)
+            sleep_duration = write_period_desired - (time.time() - time_prev)
+            if sleep_duration > 0:
+                time.sleep(sleep_duration)
+            time_prev = time.time()
+        time_stop = time.time()
+        write_period_actual = (time_stop - time_start)/cycle_count
+        print('desired write period: {0}, actual write period: {1}'.format(write_period_desired,write_period_actual))
+
+    def check_write_read_freq(self,write_period_desired,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=10,delay_write=True):
+        cycle_count = 100
+        time_start = time.time()
+        time_prev = time.time()
+        response = ''
+        for cycle_n in range(cycle_count):
+            response = self.write_read(cmd_str,use_readline,check_write_freq,max_read_attempts,delay_write)
+            sleep_duration = write_period_desired - (time.time() - time_prev)
+            if sleep_duration > 0:
+                time.sleep(sleep_duration)
+            time_prev = time.time()
+        time_stop = time.time()
+        write_period_actual = (time_stop - time_start)/cycle_count
+        print('desired write read period: {0}, actual write read period: {1}'.format(write_period_desired,write_period_actual))
+        print('response: {0}'.format(response))
 
 # device_names example:
 # [{'port':'/dev/ttyACM0',
