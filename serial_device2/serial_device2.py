@@ -59,6 +59,8 @@ class SerialDevice(serial.Serial):
     TIMEOUT = 0.05
     WRITE_READ_DELAY = 0.001
     WRITE_WRITE_DELAY = 0.005
+    OPEN_CHARS = "([{"
+    CLOSE_CHARS = ")]}"
 
     def __init__(self, *args, **kwargs):
         try:
@@ -154,7 +156,7 @@ class SerialDevice(serial.Serial):
             bytes_written = 0
         return bytes_written
 
-    def write_read(self,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100000,delay_write=True):
+    def write_read(self,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
@@ -182,7 +184,7 @@ class SerialDevice(serial.Serial):
                 bytes_written = self.write(cmd_str)
             if bytes_written > 0:
                 time.sleep(self._write_read_delay)
-                response = self._read_with_retry(use_readline, max_read_attempts)
+                response = self._read_with_retry(use_readline,max_read_attempts,match_chars)
                 self._debug_print('response:', response)
             else:
                 raise WriteError("No bytes written.")
@@ -190,7 +192,7 @@ class SerialDevice(serial.Serial):
             self._lock.release()
         return response
 
-    def _read_with_retry(self,use_readline,max_read_attempts):
+    def _read_with_retry(self,use_readline,max_read_attempts,match_chars):
         '''
         Reads data from the device.  If there is no data, try
         reading again.
@@ -198,7 +200,7 @@ class SerialDevice(serial.Serial):
         i = 0
         while i < max_read_attempts:
             i += 1
-            response = self._read(use_readline)
+            response = self._read(use_readline,match_chars)
             if response:
                 return response
 
@@ -208,18 +210,39 @@ class SerialDevice(serial.Serial):
         else:
             return response
 
-    def _read(self,use_readline):
+    def _read(self,use_readline,match_chars):
         '''
         Reads data from the device
         '''
+        response = None
         if use_readline:
             response = self.readline()
+        elif match_chars:
+            response = self._read_until_matching()
         else:
             chars_waiting = self.inWaiting()
             self._debug_print('chars_waiting:', chars_waiting)
             response = self.read(chars_waiting)
 
         return response
+
+    def _read_until_matching(self):
+        open_char_count = 0
+        close_char_count = 0
+        line = bytearray()
+        time_now = time.time()
+        time_prev = time_now
+        while ((open_char_count == 0) or (close_char_count == 0) or (open_char_count != close_char_count)) and ((time_now-time_prev) <= self.TIMEOUT):
+            c = self.read(1)
+            time_now = time.time()
+            if c:
+                if c in self.OPEN_CHARS:
+                    open_char_count += 1
+                elif c in self.CLOSE_CHARS:
+                    close_char_count += 1
+                line += c
+                time_prev = time_now
+        return bytes(line)
 
     def get_device_info(self):
         '''
@@ -244,13 +267,13 @@ class SerialDevice(serial.Serial):
         write_period_actual = (time_stop - time_start)/cycle_count
         print('desired write period: {0}, actual write period: {1}'.format(write_period_desired,write_period_actual))
 
-    def check_write_read_freq(self,write_period_desired,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=10,delay_write=True):
+    def check_write_read_freq(self,write_period_desired,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
         cycle_count = 100
         time_start = time.time()
         time_prev = time.time()
         response = ''
         for cycle_n in range(cycle_count):
-            response = self.write_read(cmd_str,use_readline,check_write_freq,max_read_attempts,delay_write)
+            response = self.write_read(cmd_str,use_readline,check_write_freq,max_read_attempts,delay_write,match_chars)
             sleep_duration = write_period_desired - (time.time() - time_prev)
             if sleep_duration > 0:
                 time.sleep(sleep_duration)
