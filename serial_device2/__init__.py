@@ -7,4 +7,4 @@ be a base class for other serial port devices with higher level
 functions. SerialDevices creates a list of SerialDevice
 instances from all available serial ports.
 '''
-from serial_device2 import SerialDevice, SerialDevices, find_serial_device_ports, find_serial_device_port, WriteFrequencyError, WriteError, ReadError, __version__
+from .serial_device2 import SerialDevice, SerialDevices, find_serial_device_ports, find_serial_device_port, WriteFrequencyError, WriteError, ReadError, __version__
