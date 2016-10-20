@@ -12,6 +12,11 @@ Authors:
 
     Peter Polidoro <polidorop@janelia.hhmi.org>
 
+Contributors:
+
+    James Pells <https://github.com/jpells>
+    Roger Zatkoff <https://github.com/rpzatkoff>
+
 License:
 
     BSD
