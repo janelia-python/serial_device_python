@@ -149,7 +149,10 @@ class SerialDevice(serial.Serial):
     def _write_check_freq_unlocked(self,cmd_str):
         bytes_written = 0
         try:
-            bytes_written = self.write(cmd_str.encode())
+            try:
+                bytes_written = self.write(cmd_str.encode())
+            except (UnicodeDecodeError):
+                bytes_written = self.write(cmd_str)
             if bytes_written > 0:
                 self._time_write_prev = time.time()
         except (serial.writeTimeoutError):
