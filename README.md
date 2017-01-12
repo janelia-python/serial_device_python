@@ -57,6 +57,8 @@ dev.get_device_info()
 ```shell
 mkdir -p ~/virtualenvs/serial_device2
 virtualenv ~/virtualenvs/serial_device2
+#Python3
+virtualenv -p python3 ~/virtualenvs/serial_device2
 source ~/virtualenvs/serial_device2/bin/activate
 pip install serial_device2
 ```
