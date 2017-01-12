@@ -343,7 +343,7 @@ class SerialDevices(list):
             for device_index in range(len(self)):
                 dev = self[device_index]
                 match = True
-                for key in name_dict.keys():
+                for key in list(name_dict.keys()):
                     if name_dict[key] != getattr(dev,key):
                         match = False
                 if match:
@@ -418,7 +418,10 @@ def find_serial_device_ports(try_ports=None, debug=DEBUG):
         serial_device_ports = [x for x in serial_device_ports if 'ttyUSB' in x or 'ttyACM' in x or 'arduino' in x]
         serial_device_ports = ['{0}dev{0}{1}'.format(os.path.sep,x) for x in serial_device_ports]
     elif os_type == 'Windows':
-        import _winreg as winreg
+        try:
+            import winreg
+        except ImportError:
+            import _winreg as winreg
         import itertools
 
         path = 'HARDWARE\\DEVICEMAP\\SERIALCOMM'
