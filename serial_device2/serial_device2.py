@@ -224,7 +224,7 @@ class SerialDevice(serial.Serial):
         elif size is not None:
             response = self.read(size)
         else:
-            chars_waiting = self.in_waiting()
+            chars_waiting = self.in_waiting
             self._debug_print('chars_waiting:', chars_waiting)
             response = self.read(chars_waiting)
 
