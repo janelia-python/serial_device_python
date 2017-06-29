@@ -217,12 +217,12 @@ class SerialDevice(serial.Serial):
         Reads data from the device
         '''
         response = None
-        if use_readline:
-            response = self.readline()
+        if size is not None:
+            response = self.read(size)
         elif match_chars:
             response = self._read_until_matching()
-        elif size is not None:
-            response = self.read(size)
+        elif use_readline:
+            response = self.readline()
         else:
             chars_waiting = self.in_waiting
             self._debug_print('chars_waiting:', chars_waiting)
