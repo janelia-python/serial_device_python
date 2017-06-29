@@ -159,7 +159,7 @@ class SerialDevice(serial.Serial):
             bytes_written = 0
         return bytes_written
 
-    def write_read(self,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False):
+    def write_read(self,cmd_str,use_readline=True,check_write_freq=False,max_read_attempts=100,delay_write=True,match_chars=False,size=None):
         '''
         A simple self.write followed by a self.readline with a
         delay set by write_read_delay when use_readline=True and
@@ -173,21 +173,20 @@ class SerialDevice(serial.Serial):
         if the device did not have the response ready after the first read
         '''
 
-        # First clear garbage.
         response = None
         lock_acquired = self._lock.acquire(delay_write)
         if not lock_acquired:
             raise WriteFrequencyError("Time between writes needs to be larger.")
         try:
-            chars_waiting = self.inWaiting()
-            self.read(chars_waiting)
+            self.reset_output_buffer()
+            self.reset_input_buffer()
             if check_write_freq:
                 bytes_written = self.write_check_freq(cmd_str,delay_write=delay_write,lock_=False)
             else:
                 bytes_written = self.write(cmd_str)
             if bytes_written > 0:
                 time.sleep(self._write_read_delay)
-                response = self._read_with_retry(use_readline,max_read_attempts,match_chars)
+                response = self._read_with_retry(use_readline,max_read_attempts,match_chars,size)
                 self._debug_print('response:', response)
             else:
                 raise WriteError("No bytes written.")
@@ -195,7 +194,7 @@ class SerialDevice(serial.Serial):
             self._lock.release()
         return response
 
-    def _read_with_retry(self,use_readline,max_read_attempts,match_chars):
+    def _read_with_retry(self,use_readline,max_read_attempts,match_chars,size):
         '''
         Reads data from the device.  If there is no data, try
         reading again.
@@ -203,7 +202,7 @@ class SerialDevice(serial.Serial):
         i = 0
         while i < max_read_attempts:
             i += 1
-            response = self._read(use_readline,match_chars)
+            response = self._read(use_readline,match_chars,size)
             if response:
                 return response
 
@@ -213,7 +212,7 @@ class SerialDevice(serial.Serial):
         else:
             return response
 
-    def _read(self,use_readline,match_chars):
+    def _read(self,use_readline,match_chars,size):
         '''
         Reads data from the device
         '''
@@ -222,8 +221,10 @@ class SerialDevice(serial.Serial):
             response = self.readline()
         elif match_chars:
             response = self._read_until_matching()
+        elif size is not None:
+            response = self.read(size)
         else:
-            chars_waiting = self.inWaiting()
+            chars_waiting = self.in_waiting()
             self._debug_print('chars_waiting:', chars_waiting)
             response = self.read(chars_waiting)
 
