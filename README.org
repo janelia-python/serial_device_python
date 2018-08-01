@@ -18,27 +18,27 @@
 
 
   #+BEGIN_SRC python
-from serial_device2 import SerialDevice, find_serial_device_ports
-find_serial_device_ports() # Returns list of available serial ports
-dev = SerialDevice() # Might automatically find device if one available
-# if it is not found automatically, specify port directly
-dev = SerialDevice(port='/dev/ttyUSB0') # Linux
-dev = SerialDevice(port='/dev/tty.usbmodem262471') # Mac OS X
-dev = SerialDevice(port='COM3') # Windows
-dev.get_device_info()
+    from serial_device2 import SerialDevice, find_serial_device_ports
+    find_serial_device_ports() # Returns list of available serial ports
+    dev = SerialDevice() # Might automatically find device if one available
+    # if it is not found automatically, specify port directly
+    dev = SerialDevice(port='/dev/ttyUSB0') # Linux
+    dev = SerialDevice(port='/dev/tty.usbmodem262471') # Mac OS X
+    dev = SerialDevice(port='COM3') # Windows
+    dev.get_device_info()
   #+END_SRC
 
   #+BEGIN_SRC python
-from serial_device2 import SerialDevices
-devs = SerialDevices()  # Might automatically find all available devices
-# if they are not found automatically, specify ports to use
-devs = SerialDevices(use_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
-devs = SerialDevices(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
-devs = SerialDevices(use_ports=['COM3','COM4']) # Windows
-devs.get_devices_info()
-devs.sort_by_port()
-dev = devs[0]
-dev.get_device_info()
+    from serial_device2 import SerialDevices
+    devs = SerialDevices()  # Might automatically find all available devices
+    # if they are not found automatically, specify ports to use
+    devs = SerialDevices(use_ports=['/dev/ttyUSB0','/dev/ttyUSB1']) # Linux
+    devs = SerialDevices(use_ports=['/dev/tty.usbmodem262471','/dev/tty.usbmodem262472']) # Mac OS X
+    devs = SerialDevices(use_ports=['COM3','COM4']) # Windows
+    devs.get_devices_info()
+    devs.sort_by_port()
+    dev = devs[0]
+    dev.get_device_info()
   #+END_SRC
 
 * Installation
@@ -48,18 +48,18 @@ dev.get_device_info()
 ** Linux and Mac OS X
 
    #+BEGIN_SRC sh
-mkdir -p ~/virtualenvs/serial_device2
-virtualenv ~/virtualenvs/serial_device2
-#Python3
-virtualenv -p python3 ~/virtualenvs/serial_device2
-source ~/virtualenvs/serial_device2/bin/activate
-pip install serial_device2
+     mkdir -p ~/virtualenvs/serial_device2
+     virtualenv ~/virtualenvs/serial_device2
+     #Python3
+     virtualenv -p python3 ~/virtualenvs/serial_device2
+     source ~/virtualenvs/serial_device2/bin/activate
+     pip install serial_device2
    #+END_SRC
 
 ** Windows
 
    #+BEGIN_SRC sh
-virtualenv C:\virtualenvs\serial_device
-C:\virtualenvs\serial_device\Scripts\activate
-pip install serial_device2
+     virtualenv C:\virtualenvs\serial_device
+     C:\virtualenvs\serial_device\Scripts\activate
+     pip install serial_device2
    #+END_SRC
