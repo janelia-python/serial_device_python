@@ -10,7 +10,7 @@ higher level functions.
 
 Authors::
 
-    Peter Polidoro <polidorop@janelia.hhmi.org>
+    Peter Polidoro <peterpolidoro@gmail.com>
 
 License::
 
@@ -36,4 +36,3 @@ Example Usage::
     devs.sort_by_port()
     dev = devs[0]
     dev.get_device_info()
-
