@@ -3,8 +3,12 @@
 #+EMAIL: peterpolidoro@gmail.com
 
 * Package Information
-  - Author :: Peter Polidoro
+  - Name :: serial_device_python
+  - Version :: 2.0.2
   - License :: BSD
+  - URL :: https://github.com/janelia-pypi/serial_device_python
+  - Author :: Peter Polidoro
+  - Email :: peterpolidoro@gmail.com
 
   This Python package (serial_device2) creates a class named
   SerialDevice, which inherits from serial.Serial and adds methods to
